@@ -1,4 +1,5 @@
 import os
+import signal
 import sys
 import time
 from multiprocessing import Process
@@ -108,6 +109,16 @@ def main():
             print('参数错误')
     else:
         print('参数长度错误')
+
+
+def quit(signum, frame):
+    print('退出...')
+    sys.exit()
+
+
+signal.signal(signal.SIGINT, quit)  # 退出信号注册
+signal.signal(signal.SIGTERM, quit)
+
 
 if __name__ == '__main__':
     main()
