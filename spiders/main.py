@@ -25,7 +25,7 @@ def run(spider):
     call(cmd)
 
 
-def start_all_spiders(spiders_list):
+def start_all_spiders(spiders_list, join=True):
     ps = []
     for spider in spiders_list:
         print('starting spider ->  ', spider)
@@ -35,8 +35,9 @@ def start_all_spiders(spiders_list):
     for p in ps:
         p.start()
 
-    for p in ps:
-        p.join()
+    if join:
+        for p in ps:
+            p.join()
 
 
 def get_pids_from_ps():
@@ -57,7 +58,7 @@ def heart_beat():
     online_spider_list = get_pids_from_ps()
     stopped_spider_list = [spider for spider in spiders_list if spider not in str(online_spider_list)]
     if stopped_spider_list:
-        start_all_spiders(stopped_spider_list)
+        start_all_spiders(stopped_spider_list, join=False)
 
 
 def main():
@@ -95,7 +96,7 @@ def main():
                     for spider in total_spiders_list:
                         line = '%d %s' % (total_spiders_list.index(spider), ' '.join(spider))
                         print(line)
-                print('当前已经停掉中的任务列表：')
+                print('当前已经停掉的任务列表：')
                 if not stopped_spider_list:
                     print('None')
                 else:
