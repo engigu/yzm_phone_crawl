@@ -6,8 +6,6 @@ from multiprocessing import Process
 from subprocess import call, getstatusoutput
 
 #
-#
-#
 # 配置
 exclude_list = ['demo.py', '__init__.py', 'main.py', 'pycharm', '<defunct>',
                 '/opt/pycharm-2018.1.3/helpers/pydev/pydevconsole.py']
@@ -16,7 +14,7 @@ spiders_path = '.'
 heart_beat_time = 60 * 5  # 心跳时间，检测已经停止的spider，启动spider
 
 py_files_list = [i for i in os.listdir(spiders_path) if i.endswith('.py')]
-spiders_list = [i for i in py_files_list if i not in exclude_list]
+spiders_list = [i for i in py_files_list if i not in exclude_list]  # 所有的spider文件
 
 # spiders_list = ['demo.py']
 # print(spiders_list)
@@ -27,9 +25,10 @@ def run(spider):
     call(cmd)
 
 
-def start_all_spiders():
+def start_all_spiders(spiders_list):
     ps = []
     for spider in spiders_list:
+        print('starting spider ->  ', spider)
         p = Process(target=run, args=(spider,))
         ps.append(p)
 
@@ -57,9 +56,8 @@ def get_pids_from_ps():
 def heart_beat():
     online_spider_list = get_pids_from_ps()
     stopped_spider_list = [spider for spider in spiders_list if spider not in str(online_spider_list)]
-    for spider in stopped_spider_list:
-        print('starting spider ->  ', spider)
-        run(spider)
+    if stopped_spider_list:
+        start_all_spiders(stopped_spider_list)
 
 
 def main():
@@ -74,7 +72,7 @@ def main():
     elif len_argv == 2:
         arg = sys.argv[1]
         if arg == 'start_all':
-            start_all_spiders()
+            start_all_spiders(spiders_list)
             pass
 
         elif arg == 'heart_beat':
