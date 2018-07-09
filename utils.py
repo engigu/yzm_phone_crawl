@@ -38,7 +38,7 @@ def remove_pid_file(full_PID_file_name):
         return True, '成功删除pid文件'
     except:
         return False, '删除pid文件失败'
-#
-#
-# def downloader():
-#     r = requests.get()
+
+
+def downloader():
+    pass
