@@ -13,6 +13,7 @@ exclude_list = ['demo.py', '__init__.py', 'main.py', 'pycharm', '<defunct>',
                 '/opt/pycharm-2018.1.3/helpers/pydev/pydevconsole.py']
 python_interpreter_path = '/home/tk/.virtualenvs/sp/bin/python'  # 解释器路径
 spiders_path = '.'
+heart_beat_time = 60 * 5  # 心跳时间，检测已经停止的spider，启动spider
 
 py_files_list = [i for i in os.listdir(spiders_path) if i.endswith('.py')]
 spiders_list = [i for i in py_files_list if i not in exclude_list]
@@ -45,12 +46,20 @@ def get_pids_from_ps():
     if res[1] == '':
         return False
     # total_spiders_list = [ tmp for line in res[1].split('\n') for tmp in line.split(' ') if tmp[2] not in exclude_list]
-    total_spiders_list = []
+    online_spider_list = []
     for line in res[1].split('\n'):
         tmp = line.split(' ')
         if tmp[2] not in exclude_list:
-            total_spiders_list.append(tmp)
-    return total_spiders_list
+            online_spider_list.append(tmp)
+    return online_spider_list
+
+
+def heart_beat():
+    online_spider_list = get_pids_from_ps()
+    stopped_spider_list = [spider for spider in spiders_list if spider not in str(online_spider_list)]
+    for spider in stopped_spider_list:
+        print('starting spider ->  ', spider)
+        run(spider)
 
 
 def main():
@@ -58,17 +67,24 @@ def main():
     if len_argv == 1:  # 提示信息
         print('Usage:')
         print()
-        print('start_all\t->\t启动所有抓取任务')
-        print('pids\t\t->\t管理当前抓取任务')
+        print('start_all\t-->\t启动所有抓取任务')
+        print('heart_beat\t-->\t启动心跳重试')
+        print('pids\t\t-->\t管理当前抓取任务')
 
     elif len_argv == 2:
         arg = sys.argv[1]
         if arg == 'start_all':
             start_all_spiders()
             pass
+
+        elif arg == 'heart_beat':
+            while True:
+                heart_beat()
+                time.sleep(heart_beat_time)
+
         elif arg == 'pids':
             while True:
-                time.sleep(0.5)
+                time.sleep(0.2)
                 total_spiders_list = get_pids_from_ps()
                 stopped_spider_list = [spider for spider in spiders_list if spider not in str(total_spiders_list)]
 

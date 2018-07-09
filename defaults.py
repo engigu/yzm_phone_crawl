@@ -20,7 +20,7 @@ SEC_PASS = 'ztsp123'
 # 下载时间间隔
 DOWNLOAD_DELAY = 0.2
 
-# pid path
+# pid files path
 PIDS = os.path.join(ROOT_PATH, './pids')
 PID_FILE_NAME = '%(spider_name)s_%(tm)s.pid'
 

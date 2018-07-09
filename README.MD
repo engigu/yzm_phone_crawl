@@ -17,6 +17,7 @@
 - 最后`python3 spiders/main.py`， 有两个运行参数选择
    - `start_all` 一次开启所有任务
    - `pids` 根据`pid`情况管理运行任务
+   - `heart_beat` 心跳检测停止的`spider`，重新启动`spider`，默认时长`5 min`，在`main.py`设置
 
 
 # 配置
