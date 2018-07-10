@@ -136,8 +136,8 @@ def main():
                 elif select.upper() == 'A':
                     q = input('结束所有任务，二次确认(a)：')
                     if q.upper() == 'A':
-                        for i in total_spiders_list:
-                            call(['kill', str(i[0])])
+                        for spider in total_spiders_list:
+                            call(['kill', str(spider[0])])
                     else:
                         break
                 else:
