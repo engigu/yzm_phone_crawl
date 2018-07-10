@@ -80,8 +80,7 @@ def main():
     global spiders_list
     len_argv = len(sys.argv)
     if len_argv == 1:  # 提示信息
-        print('Usage:')
-        print()
+        print('Usage:   python main.py [start_all|heart_beat|pids]\n')
         print('start_all\t-->\t启动所有抓取任务')
         print('heart_beat\t-->\t启动心跳重试')
         print('pids\t\t-->\t管理当前抓取任务')
@@ -114,16 +113,16 @@ def main():
                     print('None')
                     break
                 else:
-                    print('当前运行中的任务列表：')
+                    print('\n当前运行中的任务列表：')
                     for spider in total_spiders_list:
-                        line = '%d %s' % (total_spiders_list.index(spider), ' '.join(spider))
+                        line = '++ %d %s' % (total_spiders_list.index(spider), ' '.join(spider))
                         print(line)
-                print('当前已经停掉的任务列表(心跳间隔%ds)：' % heart_beat_time)
+                print('\n当前已经停掉的任务列表(心跳间隔%ds)：' % heart_beat_time)
                 if not stopped_spider_list:
                     print('None')
                 else:
                     for spider in stopped_spider_list:
-                        line = '%d %s' % (stopped_spider_list.index(spider), spider)
+                        line = '-- %d %s' % (stopped_spider_list.index(spider), spider)
                         print(line)
 
                 # 结束进程

@@ -39,7 +39,6 @@ class Ma60Crawl(object):  # 60接码
         self.bf_server = BloomFilterRedis(server=self.redis_server, key=defaults.BLOOM_KEY, blockNum=1)
         self.fp = open(full_data_file_name, 'w', encoding='utf-8')
 
-
     def _get_token(self):
         params = {
             'cmd': 'login',
