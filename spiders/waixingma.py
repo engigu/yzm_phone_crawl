@@ -23,12 +23,12 @@ full_data_file_name = os.path.join(defaults.DATA_PATH, defaults.DATA_FILE_NAME) 
 
 exit_signal = False
 RETRY_TIMES = 5  # 网络请求超时重试次数
-ItemId = '6'  # 企鹅号-自媒体-腾讯开放内容平台
-API_URL = 'http://47.75.112.7:9180/service.asmx/'
+ItemId = '1185'  # 百度
+API_URL = 'http://www.waixing666.com:9180/service.asmx/'
 
 
-class YiMaCrawl(object):  # YZ验证码
-    name = 'yima'
+class WaiXingMaCrawl(object):  # 外星验证码
+    name = 'waixingma'
 
     def __init__(self):
         self.user = defaults.USER
@@ -38,7 +38,6 @@ class YiMaCrawl(object):  # YZ验证码
         self.redis_server = bloom_filter_from_defaults(defaults.BLOOM_REDIS_URL)
         self.bf_server = BloomFilterRedis(server=self.redis_server, key=defaults.BLOOM_KEY, blockNum=1)
         self.fp = open(full_data_file_name, 'w', encoding='utf-8')
-
 
     def _get_token(self):
         params = {
@@ -107,14 +106,14 @@ class YiMaCrawl(object):  # YZ验证码
 
             # if 'Session 过期' in phone_:  # 解决过一段时间 Session 过期
             #     self.token = self._get_token()
-            #     self.logger.warning(phone_)
+            # xinta     self.logger.warning(phone_)
 
             phone_list = self._extract_phone(phone_)
             if phone_list:
                 for phone in phone_list:
                     phone_dict = {}
                     phone_dict['phone'] = phone
-                    phone_dict['source'] = YiMaCrawl.name
+                    phone_dict['source'] = WaiXingMaCrawl.name
                     # print(phone_dict)
                     record_msg(str(phone_dict))
                     if not self.bf_server.is_exists(phone):
@@ -152,5 +151,5 @@ signal.signal(signal.SIGTERM, quit)
 
 if __name__ == '__main__':
     # logging.lev
-    Y = YiMaCrawl()
-    Y.run()
+    W = WaiXingMaCrawl()
+    W.run()

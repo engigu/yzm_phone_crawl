@@ -18,7 +18,8 @@ logger = logger.Logger(spider_name)
 
 full_PID_file_name = os.path.join(defaults.PIDS, defaults.PID_FILE_NAME) \
                      % {'spider_name': spider_name, 'tm': defaults.TM}
-full_data_file_name = os.path.join(defaults.DATA_PATH, defaults.FP_MAPS[spider_name])
+full_data_file_name = os.path.join(defaults.DATA_PATH, defaults.DATA_FILE_NAME) \
+                      % {'spider_name': spider_name, 'tm': defaults.TM}
 
 exit_signal = False
 RETRY_TIMES = 5  # 网络请求超时重试次数
@@ -34,8 +35,8 @@ class XunMaCrawl(object):
         self.token = self._get_token()
         self.redis_server = bloom_filter_from_defaults(defaults.BLOOM_REDIS_URL)
         self.bf_server = BloomFilterRedis(server=self.redis_server, key=defaults.BLOOM_KEY, blockNum=1)
-        self.fp = open(os.path.join(defaults.DATA_PATH, defaults.FP_MAPS[XunMaCrawl.name]),
-                       'w', encoding='utf-8')
+        self.fp = open(full_data_file_name, 'w', encoding='utf-8')
+
 
     def _get_token(self):
         params = {

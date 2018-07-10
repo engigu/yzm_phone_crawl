@@ -17,9 +17,7 @@ def return_phone_error_check(raw):
         return True, '8'
     elif raw == '-1':  # 当前没有合条件号码
         return True, '当前没有合条件号码'
-    elif raw == '-8':  # 余额不足
-        return True, '余额不足'
-    elif '不足' in raw:
+    elif raw == '-8' or '不足' in raw:  # 余额不足
         return True, '余额不足'
     else:
         return False, ''

@@ -17,9 +17,10 @@ from BloomFilterRedis_ex.connection import bloom_filter_from_defaults
 spider_name = os.path.split(__file__)[1].split('.')[0]
 logger = logger.Logger(spider_name)
 
-full_PID_file_name = os.path.join(defaults.PIDS, defaults.PID_FILE_NAME) % {'spider_name': spider_name,
-                                                                            'tm': defaults.TM}
-full_data_file_name = os.path.join(defaults.DATA_PATH, defaults.FP_MAPS[spider_name])
+full_PID_file_name = os.path.join(defaults.PIDS, defaults.PID_FILE_NAME) \
+                     % {'spider_name': spider_name, 'tm': defaults.TM}
+full_data_file_name = os.path.join(defaults.DATA_PATH, defaults.DATA_FILE_NAME) \
+                      % {'spider_name': spider_name, 'tm': defaults.TM}
 
 exit_signal = False
 RETRY_TIMES = 5  # 网络请求超时重试次数
