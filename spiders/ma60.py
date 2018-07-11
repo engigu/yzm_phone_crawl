@@ -85,43 +85,26 @@ class Ma60Crawl(object):  # 60接码
         r = requests.get(release_url, params=params)
         return r.content.decode()
 
-    # @retry(stop_max_attempt_number=RETRY_TIMES)
-    # def check_out(self):  # 平台要求登出账号
-    #     logout_url = API_URL + 'reg/loginOut?token=%s' % self.token
-    #     r = requests.get(logout_url)
-    #     # print(r.content.decode())
-    #     return r.content.decode()
-
     def _extract_phone(self, raw):
         return re.findall(r'\d{11}', raw)
 
+    @utils.need_save_pid_files(pid_files_path=full_PID_file_name)
     def run(self):
-        # # 保存一下进程pid
-        # utils.save_pid(full_PID_file_name)
-        # record_msg('启动 -> 保存pid文件成功')
-
+        global exit_signal
         while True:
-            global exit_signal
             if exit_signal:  # 退出信号
                 self.fp.close()  # 结束退出
-                res = utils.remove_pid_file(full_PID_file_name)
-                record_msg(res[1] + ' <- 使用signal退出')
+                record_msg(' <- 使用signal退出')
                 break
 
             # 取号
             phone_ = self.get_phone()
             record_msg('接码平台取号返回 -> %s' % phone_)
 
-            # if 'Session 过期' in phone_:  # 解决过一段时间 Session 过期
-            #     self.token = self._get_token()
-            #     record_msg(phone_)
-
             # 账户异常退出
             res = utils.return_phone_error_check(phone_)
             if res[0]:
                 record_msg('账户异常退出，返回 -> %s -> %s' % (phone_, res[1]))
-                res = utils.remove_pid_file(full_PID_file_name)
-                record_msg('%s <- 账户异常退出' % res[1])
                 break
 
             phone_list = self._extract_phone(phone_)
@@ -153,11 +136,11 @@ def record_msg(msg):
     print(msg)
 
 
+@utils.need_remove_pid_files(pid_files_path=full_PID_file_name)
 def quit(signum, frame):
     global exit_signal
     exit_signal = True
-    res = utils.remove_pid_file(full_PID_file_name)
-    record_msg(res[1] + ' <- 从sys.exit退出')
+    record_msg(' <- 从sys.exit退出')
     sys.exit()
 
 
@@ -168,5 +151,3 @@ if __name__ == '__main__':
     # logging.lev
     T = Ma60Crawl()
     T.run()
-    # print(T._get_token())
-    # print(T.check_out())

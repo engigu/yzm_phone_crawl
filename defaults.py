@@ -21,6 +21,7 @@ SEC_PASS = 'ztsp123'
 DOWNLOAD_DELAY = 0.5
 
 # pid files path
+SAVE_PID_FILES = True  # 开启记录pid文件
 PIDS = os.path.join(ROOT_PATH, 'pids/')
 PID_FILE_NAME = '%(spider_name)s_%(tm)s.pid'
 

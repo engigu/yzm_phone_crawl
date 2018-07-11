@@ -20,7 +20,7 @@
    - `heart_beat` 心跳检测停止的`spider`，重新启动`spider`，默认时长`5 min`，在`main.py`设置
 - 支持其他spiders运行时上线新spider，`spiders`文件夹里`pre.py`文件为预上线代码，测试(测试记得注释掉bloom过滤代码，以免影响生产
   环境过滤)，ok以后，`cp pre.py xxx(newSpiderName).py`，到达心跳间隔，自动会启动
-- `demo.py`为测试文件
+- `demo.py`为功能测试文件
 
 # 配置
 

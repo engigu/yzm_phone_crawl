@@ -80,17 +80,13 @@ class ShenHuaCrawl(object):
     def _extract_phone(self, raw):
         return re.findall(r'\d{11}', raw)
 
+    @utils.need_save_pid_files(pid_files_path=full_PID_file_name)
     def run(self):
-        # 保存一下进程pid
-        utils.save_pid(full_PID_file_name)
-        record_msg('启动 -> 保存pid文件成功')
-
+        global exit_signal
         while True:
-            global exit_signal
             if exit_signal:  # 退出信号
                 self.fp.close()  # 结束退出
-                res = utils.remove_pid_file(full_PID_file_name)
-                record_msg(res[1] + ' <- 使用signal退出')
+                record_msg(' <- 使用signal退出')
                 break
 
             # 取号
@@ -105,8 +101,6 @@ class ShenHuaCrawl(object):
             res = utils.return_phone_error_check(phone_)
             if res[0]:
                 record_msg('账户异常退出，返回 -> %s -> %s' % (phone_, res[1]))
-                res = utils.remove_pid_file(full_PID_file_name)
-                record_msg('%s <- 账户异常退出' % res[1])
                 break
 
             phone_list = self._extract_phone(phone_)
@@ -138,11 +132,11 @@ def record_msg(msg):
     print(msg)
 
 
+@utils.need_remove_pid_files(pid_files_path=full_PID_file_name)
 def quit(signum, frame):
     global exit_signal
     exit_signal = True
-    res = utils.remove_pid_file(full_PID_file_name)
-    record_msg(res[1] + ' <- 从sys.exit退出')
+    record_msg(' <- 从sys.exit退出')
     sys.exit()
 
 

@@ -1,4 +1,3 @@
-import hashlib
 import os
 import re
 import signal
@@ -23,13 +22,12 @@ full_data_file_name = os.path.join(defaults.DATA_PATH, defaults.DATA_FILE_NAME) 
                       % {'spider_name': spider_name, 'tm': defaults.TM}
 
 exit_signal = False
-itemId = '13242B3AA4C6046'
 RETRY_TIMES = 5  # 网络请求超时重试次数
-API_URL = 'http://sms.60ma.net/'
+ItemId = '4223'
 
 
-class Ma60Crawl(object):  # 60接码
-    name = 'ma60'
+class XunMaCrawl(object):
+    name = 'xunma'
 
     def __init__(self):
         self.user = defaults.USER
@@ -42,87 +40,60 @@ class Ma60Crawl(object):  # 60接码
 
     def _get_token(self):
         params = {
-            'cmd': 'login',
-            'encode': 'utf-8',
-            'username': self.user,
-            'password': hashlib.md5(self.pass_.encode()).hexdigest(),
-            'dtype': 'json',
-            # 'Developer': 'cvZpfUej8AVQSZPa31W5Lw%3d%3d'
+            'uName': self.user,
+            'pWord': self.pass_,
+            'Developer': 'skjuzNhmPhrl9Zkri4z9LQ%3d%3d'
         }
-        login_url = API_URL + 'loginuser'
-        r = requests.get(login_url, params=params).json()
-        self.userID = r['Return']['UserID']
-        # self.userKey = r['Return']['UserKey']
-        return r['Return']['UserKey']
+        login_url = 'http://xapi.xunma.net/Login'
+        r = requests.get(login_url, params=params)
+        token = r.content.decode().split('&')[0]
+        return token
 
     @retry(stop_max_attempt_number=RETRY_TIMES)
     def get_phone(self):
         params = {
-            'cmd': 'gettelnum',
-            'encode': 'utf-8',
-            'dtype': 'json',
-            'userid': self.userID,
-            'userkey': self.token,
-            'docks': itemId,
-
+            'ItemId': ItemId,  # 必填,项目需要先收藏
+            'token': self.token,  # 必填
+            'num': '1',  # 非必填，默认为 1
         }
-        get_phone_url = API_URL + 'newsmssrv'
+        get_phone_url = 'http://xapi.xunma.net/getPhone'
         r = requests.get(get_phone_url, params=params)
-        return r.content.decode()
+        return r.content.decode('gbk')
 
     @retry(stop_max_attempt_number=RETRY_TIMES)
     def release_url(self, phone):  # 释放手机号码
         params = {
-            'cmd': 'freetelnum',
-            'encode': 'utf-8',
-            'dtype': 'json',
-            'userid': self.userID,
-            'userkey': self.token,
-            'docks': itemId,
-            'telnum': phone,
-
+            'token': self.token,
+            'phoneList': '%s-%s;' % (phone, ItemId)
         }
-        release_url = API_URL + 'newsmssrv'
+        release_url = 'http://xapi.xunma.net/releasePhone'
         r = requests.get(release_url, params=params)
         return r.content.decode()
-
-    # @retry(stop_max_attempt_number=RETRY_TIMES)
-    # def check_out(self):  # 平台要求登出账号
-    #     logout_url = API_URL + 'reg/loginOut?token=%s' % self.token
-    #     r = requests.get(logout_url)
-    #     # print(r.content.decode())
-    #     return r.content.decode()
 
     def _extract_phone(self, raw):
         return re.findall(r'\d{11}', raw)
 
+    @utils.need_save_pid_files(pid_files_path=full_PID_file_name)
     def run(self):
-        # # 保存一下进程pid
-        # utils.save_pid(full_PID_file_name)
-        # record_msg('启动 -> 保存pid文件成功')
-
+        global exit_signal
         while True:
-            global exit_signal
             if exit_signal:  # 退出信号
                 self.fp.close()  # 结束退出
-                res = utils.remove_pid_file(full_PID_file_name)
-                record_msg(res[1] + ' <- 使用signal退出')
+                record_msg(' <- 使用signal退出')
                 break
 
             # 取号
             phone_ = self.get_phone()
             record_msg('接码平台取号返回 -> %s' % phone_)
 
-            # if 'Session 过期' in phone_:  # 解决过一段时间 Session 过期
-            #     self.token = self._get_token()
-            #     record_msg(phone_)
+            if 'Session 过期' in phone_:  # 解决过一段时间 Session 过期
+                self.token = self._get_token()
+                record_msg(phone_)
 
             # 账户异常退出
             res = utils.return_phone_error_check(phone_)
             if res[0]:
                 record_msg('账户异常退出，返回 -> %s -> %s' % (phone_, res[1]))
-                res = utils.remove_pid_file(full_PID_file_name)
-                record_msg('%s <- 账户异常退出' % res[1])
                 break
 
             phone_list = self._extract_phone(phone_)
@@ -130,14 +101,14 @@ class Ma60Crawl(object):  # 60接码
                 for phone in phone_list:
                     phone_dict = {}
                     phone_dict['phone'] = phone
-                    phone_dict['source'] = Ma60Crawl.name
+                    phone_dict['source'] = XunMaCrawl.name
                     # print(phone_dict)
                     record_msg(str(phone_dict))
-                    if not self.bf_server.is_exists(phone):
-                        self.fp.write(str(phone_dict) + '\n')
-                        self.fp.flush()
-                    else:
-                        record_msg('过滤了重复手机号码 -> %s' % phone_dict)
+                    # if not self.bf_server.is_exists(phone):
+                    #     self.fp.write(str(phone_dict) + '\n')
+                    #     self.fp.flush()
+                    # else:
+                    #     record_msg('过滤了重复手机号码 -> %s' % phone_dict)
 
                     # 释放手机号码
                     res = self.release_url(phone)
@@ -154,11 +125,11 @@ def record_msg(msg):
     print(msg)
 
 
+@utils.need_remove_pid_files(pid_files_path=full_PID_file_name)
 def quit(signum, frame):
     global exit_signal
     exit_signal = True
-    res = utils.remove_pid_file(full_PID_file_name)
-    record_msg(res[1] + ' <- 从sys.exit退出')
+    record_msg(' <- 从sys.exit退出')
     sys.exit()
 
 
@@ -166,8 +137,5 @@ signal.signal(signal.SIGINT, quit)  # 退出信号注册
 signal.signal(signal.SIGTERM, quit)
 
 if __name__ == '__main__':
-    # logging.lev
-    T = Ma60Crawl()
-    T.run()
-    # print(T._get_token())
-    # print(T.check_out())
+    X = XunMaCrawl()
+    X.run()

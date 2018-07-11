@@ -1,9 +1,7 @@
 import os
+import functools
 
-try:
-    import defaults
-except:
-    from . import defaults
+import defaults
 
 
 def return_phone_error_check(raw):
@@ -27,7 +25,6 @@ def save_pid(full_PID_file_name):
     pid = os.getpid()
     with open(full_PID_file_name, 'w') as f:
         f.write(str(pid))
-        f.flush()
 
 
 def remove_pid_file(full_PID_file_name):
@@ -38,5 +35,35 @@ def remove_pid_file(full_PID_file_name):
         return False, '删除pid文件失败'
 
 
-def downloader():
+def downloader():  # 下载器
     pass
+
+
+def need_save_pid_files(pid_files_path, need=defaults.SAVE_PID_FILES):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            if need:
+                save_pid(pid_files_path)
+            func(*args, **kwargs)
+
+        return wrapper
+
+    return decorator
+
+
+def need_remove_pid_files(pid_files_path, need=defaults.SAVE_PID_FILES):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            if need:
+                print(remove_pid_file(pid_files_path))
+            func(*args, **kwargs)
+
+        return wrapper
+
+    return decorator
+
+
+if __name__ == '__main__':
+    print(defaults.SAVE_PID_FILES)
