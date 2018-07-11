@@ -46,9 +46,7 @@ def need_save_pid_files(pid_files_path, need=defaults.SAVE_PID_FILES):
             if need:
                 save_pid(pid_files_path)
             func(*args, **kwargs)
-
         return wrapper
-
     return decorator
 
 
@@ -59,9 +57,7 @@ def need_remove_pid_files(pid_files_path, need=defaults.SAVE_PID_FILES):
             if need:
                 print(remove_pid_file(pid_files_path))
             func(*args, **kwargs)
-
         return wrapper
-
     return decorator
 
 

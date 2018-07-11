@@ -32,3 +32,12 @@
 - 项目目前采用单线程，接码平台借口也不适合用多线程
 - 网络请求目前采用`requests`，也未封装成下载器，尚待改进
 - 未根据pids文件夹pid文件判断运行，实测效果很不理想，改调用shell获取pid，暂时未注释掉相关代码
+
+
+### 平台
+
+- [米粒](http://www.mili02.com/)   [集码](www.jima99.com)    [极速接码](http://jsjmpt.com/index.html)
+- [51快码](http://www.51kmf.com/ )    [60码](http://www.60ma.net/)    [麦子云](http://www.maiziyzm.com)
+- [神话](http://115.28.184.182:8000/login.html)    [淘码](http://w6888.cn/)    [thewolf](http://www.yyyzmpt.com/)
+- [外星码](http://www.waixing666.com/oszc.html)    [星光码](http://120.79.137.205/oszc.html) [讯码](http://xunma.net/)
+- [一码](http://yima998.com//oszc.html)    [柚子码](http://www.yzm9.com/homepage.html)    [YZ码](http://www.yzm8888.cn/oszc.html)
