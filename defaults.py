@@ -43,7 +43,7 @@ BLOCK_NUM = 1
 # log
 SAVE_LOG = True
 LOG_LEVEL = 'INFO'
-LOG_PATH = 'logs'
+LOG_PATH = os.path.join(ROOT_PATH, 'logs/')
 LOG_NAME = '%(name)s_%(time)s.log'
 
 # spiders env config

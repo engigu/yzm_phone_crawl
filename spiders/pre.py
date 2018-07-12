@@ -101,11 +101,11 @@ class EMa666Crawl(object):  # 柚子接码
                     phone_dict['source'] = EMa666Crawl.name
                     # print(phone_dict)
                     record_msg(str(phone_dict))
-                    if not self.bf_server.is_exists(phone):
-                        self.fp.write(str(phone_dict) + '\n')
-                        self.fp.flush()
-                    else:
-                        record_msg('过滤了重复手机号码 -> %s' % phone_dict)
+                    # if not self.bf_server.is_exists(phone):
+                    #     self.fp.write(str(phone_dict) + '\n')
+                    #     self.fp.flush()
+                    # else:
+                    #     record_msg('过滤了重复手机号码 -> %s' % phone_dict)
 
                     # 释放手机号码
                     res = self.release_url(phone)

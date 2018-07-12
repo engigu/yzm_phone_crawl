@@ -64,16 +64,14 @@ def heart_beat():
         start_all_spiders(stopped_spider_list, join=False)
 
 
-def remove_empty_data_files():
-    data_path = defaults.DATA_PATH
-    # print(data_path)
-    files_list = os.listdir(data_path)
+def remove_empty_files_under_folder(folder_path):
+    files_list = os.listdir(folder_path)
     for file in files_list:
-        with open(data_path + file, 'r') as  f:
+        with open(folder_path + file, 'r') as  f:
             con = f.read()
         if not con:
-            print('remove -> ', data_path + file)
-            os.remove(data_path + file)
+            print('remove -> ', folder_path + file)
+            os.remove(folder_path + file)
 
 
 def refresh_spiders_list():
@@ -101,7 +99,8 @@ def main():
             while True:
                 refresh_spiders_list()
                 heart_beat()
-                remove_empty_data_files()
+                remove_empty_files_under_folder(defaults.DATA_PATH)  # 移除多余的data与log文件
+                remove_empty_files_under_folder(defaults.LOG_PATH)
                 time.sleep(heart_beat_time)
 
         elif arg == 'pids':
@@ -165,4 +164,3 @@ signal.signal(signal.SIGTERM, quit)
 if __name__ == '__main__':
     main()
     # print(spiders_path)
-    # remove_empty_data_files()
