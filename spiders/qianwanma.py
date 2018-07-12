@@ -22,12 +22,13 @@ full_data_file_name = os.path.join(defaults.DATA_PATH, defaults.DATA_FILE_NAME) 
                       % {'spider_name': spider_name, 'tm': defaults.TM}
 
 exit_signal = False
+itemId = '53393'  # 百度
 RETRY_TIMES = 5  # 网络请求超时重试次数
-ItemId = '4223'
+API_URL = 'http://kapi.yika66.com:20153/User/'
 
 
-class XunMaCrawl(object):
-    name = 'xunma'
+class QianWanMaCrawl(object):  # 千万接码
+    name = 'qianwanma'
 
     def __init__(self):
         self.user = defaults.USER
@@ -37,53 +38,46 @@ class XunMaCrawl(object):
         self.bf_server = BloomFilterRedis(server=self.redis_server, key=defaults.BLOOM_KEY, blockNum=1)
         self.fp = open(full_data_file_name, 'w', encoding='utf-8')
 
-
     def _get_token(self):
         params = {
             'uName': self.user,
             'pWord': self.pass_,
-            'Developer': 'skjuzNhmPhrl9Zkri4z9LQ%3d%3d'
+            # 'Developer': 'cvZpfUej8AVQSZPa31W5Lw%3d%3d'
         }
-        login_url = 'http://xapi.xunma.net/Login'
+        login_url = API_URL + 'login'
         r = requests.get(login_url, params=params)
-        token = r.content.decode().split('&')[0]
+        token = r.content.decode('gbk').split('&')[0]
         return token
 
     @retry(stop_max_attempt_number=RETRY_TIMES)
     def get_phone(self):
         params = {
-            'ItemId': ItemId,  # 必填,项目需要先收藏
+            'ItemId': itemId,  # 必填,项目需要先收藏
             'token': self.token,  # 必填
             'num': '1',  # 非必填，默认为 1
+            'PhoneType': '0',  # 非必填，默认为0
         }
-        get_phone_url = 'http://xapi.xunma.net/getPhone'
+        get_phone_url = API_URL + 'getPhone'
         r = requests.get(get_phone_url, params=params)
-        return r.content.decode('gbk')
+        return r.content.decode()
 
     @retry(stop_max_attempt_number=RETRY_TIMES)
     def release_url(self, phone):  # 释放手机号码
-        params = {
-            'token': self.token,
-            'phoneList': '%s-%s;' % (phone, ItemId)
-        }
-        release_url = 'http://xapi.xunma.net/releasePhone'
-        r = requests.get(release_url, params=params)
+        release_url = API_URL + 'releasePhone?token=%s&phoneList=%s-%s;' \
+                      % (self.token, phone, itemId)
+        r = requests.get(release_url)
         return r.content.decode()
 
     def _extract_phone(self, raw):
         return re.findall(r'\d{11}', raw)
 
+    @utils.need_save_pid_files(pid_files_path=full_PID_file_name)
     def run(self):
-        # 保存一下进程pid
-        utils.save_pid(full_PID_file_name)
-        record_msg('启动 -> 保存pid文件成功')
-
+        global exit_signal
         while True:
-            global exit_signal
             if exit_signal:  # 退出信号
                 self.fp.close()  # 结束退出
-                res = utils.remove_pid_file(full_PID_file_name)
-                record_msg(res[1] + ' <- 使用signal退出')
+                record_msg(' <- 使用signal退出')
                 break
 
             # 取号
@@ -98,8 +92,6 @@ class XunMaCrawl(object):
             res = utils.return_phone_error_check(phone_)
             if res[0]:
                 record_msg('账户异常退出，返回 -> %s -> %s' % (phone_, res[1]))
-                res = utils.remove_pid_file(full_PID_file_name)
-                record_msg('%s <- 账户异常退出' % res[1])
                 break
 
             phone_list = self._extract_phone(phone_)
@@ -107,7 +99,7 @@ class XunMaCrawl(object):
                 for phone in phone_list:
                     phone_dict = {}
                     phone_dict['phone'] = phone
-                    phone_dict['source'] = XunMaCrawl.name
+                    phone_dict['source'] = QianWanMaCrawl.name
                     # print(phone_dict)
                     record_msg(str(phone_dict))
                     if not self.bf_server.is_exists(phone):
@@ -131,11 +123,11 @@ def record_msg(msg):
     print(msg)
 
 
+@utils.need_remove_pid_files(pid_files_path=full_PID_file_name)
 def quit(signum, frame):
     global exit_signal
     exit_signal = True
-    res = utils.remove_pid_file(full_PID_file_name)
-    record_msg(res[1] + ' <- 从sys.exit退出')
+    record_msg(' <- 从sys.exit退出')
     sys.exit()
 
 
@@ -144,5 +136,5 @@ signal.signal(signal.SIGTERM, quit)
 
 if __name__ == '__main__':
     # logging.lev
-    X = XunMaCrawl()
-    X.run()
+    Q = QianWanMaCrawl()
+    Q.run()
