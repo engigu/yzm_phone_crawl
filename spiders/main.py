@@ -16,7 +16,7 @@ spiders_path = defaults.SPIDERS_PATH
 heart_beat_time = defaults.HEART_BEAT_TIME  # 心跳时间，检测已经停止的spider，启动spider
 
 py_files_list = [i for i in os.listdir(spiders_path) if i.endswith('.py')]
-spiders_list = [i for i in py_files_list if i not in exclude_list]  # 所有的spider文件
+spiders_list = [i for i in py_files_list if i not in exclude_list]  # 所有的spider文件，全局变量
 main_process_pid = os.getpid()
 
 # spiders_list = ['demo.py']
@@ -66,9 +66,8 @@ def heart_beat():
 
 def remove_empty_data_files():
     data_path = defaults.DATA_PATH
-    print(defaults.DATA_PATH)
+    # print(data_path)
     files_list = os.listdir(data_path)
-    print(files_list)
     for file in files_list:
         with open(data_path + file, 'r') as  f:
             con = f.read()
@@ -85,13 +84,12 @@ def refresh_spiders_list():
 
 
 def main():
-    # global spiders_list
     len_argv = len(sys.argv)
     if len_argv == 1:  # 提示信息
-        print('Usage:   python main.py [start_all|heart_beat|pids]\n')
+        print('\nUsage:   python main.py [start_all|heart_beat|pids]\n')
         print('start_all\t-->\t启动所有抓取任务')
         print('heart_beat\t-->\t启动心跳重试')
-        print('pids\t\t-->\t管理当前抓取任务')
+        print('pids\t\t-->\t管理当前抓取任务\n')
 
     elif len_argv == 2:
         arg = sys.argv[1]
@@ -100,11 +98,7 @@ def main():
             pass
 
         elif arg == 'heart_beat':
-            # global spiders_list   # 重复检测新spider文件
             while True:
-                # 重复检测新spider文件
-                # py_files_list = [i for i in os.listdir(spiders_path) if i.endswith('.py')]
-                # spiders_list = [i for i in py_files_list if i not in exclude_list]  # 所有的spider文件
                 refresh_spiders_list()
                 heart_beat()
                 remove_empty_data_files()
@@ -113,7 +107,6 @@ def main():
         elif arg == 'pids':
             while True:
                 refresh_spiders_list()
-
                 time.sleep(0.2)
                 total_spiders_list = get_pids_from_ps()
                 stopped_spider_list = [spider for spider in spiders_list if spider not in str(total_spiders_list)]
@@ -150,6 +143,7 @@ def main():
                         time.sleep(1)
                         call(['kill', str(main_process_pid)])
                     else:
+                        print('未结束退出')
                         break
                 else:
                     print('输入错误')

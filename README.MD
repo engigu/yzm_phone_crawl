@@ -41,3 +41,4 @@
 - [神话](http://115.28.184.182:8000/login.html)    [淘码](http://w6888.cn/)    [thewolf](http://www.yyyzmpt.com/)
 - [外星码](http://www.waixing666.com/oszc.html)    [星光码](http://120.79.137.205/oszc.html) [讯码](http://xunma.net/)
 - [一码](http://yima998.com//oszc.html)    [柚子码](http://www.yzm9.com/homepage.html)    [YZ码](http://www.yzm8888.cn/oszc.html)
+- [E云]：( http://www.ema666.com/)
