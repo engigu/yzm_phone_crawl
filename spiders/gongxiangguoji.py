@@ -23,12 +23,12 @@ full_data_file_name = os.path.join(defaults.DATA_PATH, defaults.DATA_FILE_NAME) 
 
 exit_signal = False
 RETRY_TIMES = 5  # 网络请求超时重试次数
-ItemId = '6'  # 百度
-API_URL = 'http://47.52.134.22:9180/service.asmx/'
+ItemId = '71'  # 百度
+API_URL = 'http://www.gx-gj.com:9180/service.asmx/'
 
 
-class LaiMaCrawl(object):  # 来码
-    name = 'laima'
+class GXguojiCrawl(object):  # 共享国际
+    name = 'gongxiangguoji'
 
     def __init__(self):
         self.user = defaults.USER
@@ -103,7 +103,7 @@ class LaiMaCrawl(object):  # 来码
                 for phone in phone_list:
                     phone_dict = {}
                     phone_dict['phone'] = phone
-                    phone_dict['source'] = LaiMaCrawl.name
+                    phone_dict['source'] = GXguojiCrawl.name
                     # print(phone_dict)
                     record_msg(str(phone_dict))
                     if not self.bf_server.is_exists(phone):
@@ -141,5 +141,5 @@ signal.signal(signal.SIGTERM, quit)
 
 if __name__ == '__main__':
     # logging.lev
-    L = LaiMaCrawl()
-    L.run()
+    G = GXguojiCrawl()
+    G.run()

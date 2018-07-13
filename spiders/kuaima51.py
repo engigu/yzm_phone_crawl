@@ -21,6 +21,11 @@ full_PID_file_name = os.path.join(defaults.PIDS, defaults.PID_FILE_NAME) \
 full_data_file_name = os.path.join(defaults.DATA_PATH, defaults.DATA_FILE_NAME) \
                       % {'spider_name': spider_name, 'tm': defaults.TM}
 
+USER = ['ztsp1234567']
+PASS = ['ztsp1234567']
+
+
+
 exit_signal = False
 RETRY_TIMES = 5  # 网络请求超时重试次数
 ItemId = '3954'  # 企鹅号-自媒体-腾讯开放内容平台
@@ -31,8 +36,8 @@ class KuaiMa51Crawl(object):  # YZ验证码
     name = 'kuaima51'
 
     def __init__(self):
-        self.user = defaults.USER
-        self.pass_ = defaults.PASS
+        self.user = USER[0]
+        self.pass_ = PASS[0]
         self.token = self._get_token()
         print(self.token)
         self.redis_server = bloom_filter_from_defaults(defaults.BLOOM_REDIS_URL)
@@ -47,6 +52,7 @@ class KuaiMa51Crawl(object):  # YZ验证码
         }
         login_url = API_URL + 'UserLoginStr'
         r = requests.get(login_url, params=params)
+        # print('login ', r.content.decode())
         token = r.content.decode().split('&')[0]
         return token
 

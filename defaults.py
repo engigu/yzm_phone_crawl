@@ -18,7 +18,7 @@ PASS = 'ztsp123456'
 SEC_PASS = 'ztsp123'
 
 # 下载时间间隔
-DOWNLOAD_DELAY = 0.5
+DOWNLOAD_DELAY = 0.8
 
 # pid files path
 SAVE_PID_FILES = False  # 开启记录pid文件
