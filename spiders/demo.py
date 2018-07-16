@@ -30,13 +30,14 @@ API_URL = 'http://www.js-yzm.com:9180/service.asmx/'
 
 class JieSuJieMaCrawl(object):  # YZ验证码
     name = 'jisujiema'
+    redis_server = bloom_filter_from_defaults(defaults.BLOOM_REDIS_URL)
 
     def __init__(self):
         self.user = defaults.USER
         self.pass_ = defaults.PASS
-        self.token = self._get_token()
-        print(self.token)
-        self.redis_server = bloom_filter_from_defaults(defaults.BLOOM_REDIS_URL)
+        # self.token = self._get_token()
+        # print(self.token)
+        # JieSuJieMaCrawl.redis_server = bloom_filter_from_defaults(defaults.BLOOM_REDIS_URL)
         self.bf_server = BloomFilterRedis(server=self.redis_server, key=defaults.BLOOM_KEY, blockNum=1)
         self.fp = open(full_data_file_name, 'w', encoding='utf-8')
 
@@ -81,7 +82,9 @@ class JieSuJieMaCrawl(object):  # YZ验证码
         return re.findall(r'\d{11}', raw)
 
     @utils.need_save_pid_files(pid_files_path=full_PID_file_name)
+    @utils.account_band_judge(server=redis_server, spider_name=spider_name)
     def run(self):
+        i = 1
         global exit_signal
         while True:
             if exit_signal:  # 退出信号
@@ -91,9 +94,11 @@ class JieSuJieMaCrawl(object):  # YZ验证码
 
             print(os.getpid())
 
-            self.fp.write('fasfsa' + '\n')
-            self.fp.flush()
-
+            # self.fp.write('fasfsa' + '\n')
+            # self.fp.flush()
+            i += 1
+            if i > 3:
+                break
             time.sleep(defaults.DOWNLOAD_DELAY)
 
     def __del__(self):
@@ -106,6 +111,7 @@ def record_msg(msg):
     print(msg)
 
 
+# @utils.account_band_judge(st=st)
 @utils.need_remove_pid_files(pid_files_path=full_PID_file_name)
 def quit(signum, frame):
     global exit_signal

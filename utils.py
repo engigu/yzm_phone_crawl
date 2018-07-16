@@ -1,7 +1,9 @@
-import os
 import functools
+import os
+import time
 
 import defaults
+from ext_funcs.smpt_mail import smtp_sendmail
 
 
 def return_phone_error_check(raw):
@@ -39,6 +41,38 @@ def downloader():  # 下载器
     pass
 
 
+def record_low_run_time(server, spider_name):  # 记录低于运行时长阈值的次数
+    print('record_low_run_time')
+    redis_name = 'yangmao_low_run_time_record_map'
+
+    res_exists = server.hget(name=redis_name, key=spider_name)
+    if not res_exists:  # 第一次运行spider，设置初始值 1
+        server.hset(name=redis_name, key=spider_name, value=1)
+        print('does not exists')
+    else:
+        curr_num = int(res_exists)
+        print('current times is', curr_num)
+        if curr_num >= defaults.WARNING_TIMES:
+            print('over the warning')
+            title = 'yangmao phone crawler[%s] waring' % spider_name
+            content = '%s<br /><br />0.0' % spider_name
+            smtp_sendmail(
+                defaults.MAIL_USER,
+                defaults.MAIL_PASS,
+                defaults.TO_USERS_LIST,
+                title,
+                content
+            )  # 预警邮件发送
+
+            # 重置次数
+            server.hset(name=redis_name, key=spider_name, value=1)
+            print('redis reset')
+        else:
+            curr_num += 1  # 添加一次新的记录
+            server.hset(name=redis_name, key=spider_name, value=curr_num)
+
+
+
 def need_save_pid_files(pid_files_path, need=defaults.SAVE_PID_FILES):
     def decorator(func):
         @functools.wraps(func)
@@ -60,6 +94,24 @@ def need_remove_pid_files(pid_files_path, need=defaults.SAVE_PID_FILES):
         return wrapper
     return decorator
 
+
+def account_band_judge(server, spider_name, need=defaults.NEED_ACCOUNT_BAND_JUDGE):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            if need:
+                st = time.time()
+                func(*args, **kwargs)
+                #  增加账号被封预警，采用run运行时长判断
+                dur_time = time.time() - st
+                if dur_time < defaults.DUR_TIME:
+                    record_low_run_time(server, spider_name)
+            else:
+                func(*args, **kwargs)
+
+        return wrapper
+
+    return decorator
 
 if __name__ == '__main__':
     print(defaults.SAVE_PID_FILES)

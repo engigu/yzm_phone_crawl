@@ -53,3 +53,13 @@ SPIDERS_EXCLUDE_LISTS = ['demo.py', 'pre.py', '__init__.py', 'main.py', 'pycharm
 PYTHON_INTERPRETER_PATH = '/home/tk/.virtualenvs/sp/bin/python'  # python解释器路径
 SPIDERS_PATH = os.path.join(ROOT_PATH, 'spiders/')
 HEART_BEAT_TIME = 60 * 10  # 心跳时间，检测已经停止的spider，启动spider，默认为秒
+
+# 账户被封预警
+NEED_ACCOUNT_BAND_JUDGE = True
+DUR_TIME = 10  # 低运行时长判定阈值(秒)
+WARNING_TIMES = 20  # 低运行时长次数阈值
+
+# 邮箱信息(base64编码)
+MAIL_USER = b'dG90YWxjaGVja0BzaW5hLmNvbQ=='  # 邮箱账号
+MAIL_PASS = b"Z3ExOTk0MDUwNw=="  # 邮箱密码
+TO_USERS_LIST = [b"c2F5aGV5YUBxcS5jb20="]  # 收件人邮箱列表

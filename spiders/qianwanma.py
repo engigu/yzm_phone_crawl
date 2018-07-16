@@ -29,12 +29,12 @@ API_URL = 'http://kapi.yika66.com:20153/User/'
 
 class QianWanMaCrawl(object):  # 千万接码
     name = 'qianwanma'
+    redis_server = bloom_filter_from_defaults(defaults.BLOOM_REDIS_URL)
 
     def __init__(self):
         self.user = defaults.USER
         self.pass_ = defaults.PASS
         self.token = self._get_token()
-        self.redis_server = bloom_filter_from_defaults(defaults.BLOOM_REDIS_URL)
         self.bf_server = BloomFilterRedis(server=self.redis_server, key=defaults.BLOOM_KEY, blockNum=1)
         self.fp = open(full_data_file_name, 'w', encoding='utf-8')
 
@@ -72,6 +72,7 @@ class QianWanMaCrawl(object):  # 千万接码
         return re.findall(r'\d{11}', raw)
 
     @utils.need_save_pid_files(pid_files_path=full_PID_file_name)
+    @utils.account_band_judge(server=redis_server, spider_name=spider_name)
     def run(self):
         global exit_signal
         while True:
