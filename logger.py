@@ -36,12 +36,10 @@ else:
         logger.setLevel(maps.get(LEVEL))  # Log等级总开关
         # 第二步，创建一个handler，用于写入日志文件
         tm = time.strftime('%Y_%m_%d__%H_%M', time.localtime(time.time()))
-        project_path = os.path.split(os.path.realpath(__file__))[0]
         log_path = defaults.LOG_PATH
-        project_path = os.path.join(project_path, log_path)
         log_name = defaults.LOG_NAME % {'name': set_name, 'time': tm}
-        logfile = os.path.join(project_path, log_name)
-        # print(logfile)
+        logfile = os.path.join(log_path, log_name)
+        print(logfile)
         fh = logging.FileHandler(logfile, mode='w')
         fh.setLevel(maps.get(LEVEL))  # 输出到file的log等级的开关
         # 第三步，定义handler的输出格式
