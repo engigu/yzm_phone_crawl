@@ -123,11 +123,13 @@ class TheWolfCrawl(object):  # thewolf接码
                     else:
                         record_msg('过滤了重复手机号码 -> %s' % phone_dict)
 
+                    time.sleep(defaults.RELEASE_DELAY)        
+
                     # 释放手机号码
                     res = self.release_url(phone)
                     record_msg('释放手机号 -> %s' % res)
 
-            time.sleep(defaults.DOWNLOAD_DELAY)
+            time.sleep(defaults.GET_PHONE_DELAY)
 
     def __del__(self):
         pass

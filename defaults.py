@@ -10,15 +10,16 @@ TM = time.strftime('%Y_%m_%d__%H_%M', time.localtime(time.time()))
 # 根目录绝对路径
 ROOT_PATH = os.path.split(__file__)[0]
 
-# 账号密码
+# 默认账号密码
 USER = 'ztsp123456'
 PASS = 'ztsp123456'
 
 # 安全密码
 SEC_PASS = 'ztsp123'
 
-# 下载时间间隔
-DOWNLOAD_DELAY = 0.8
+# 时间间隔
+GET_PHONE_DELAY = 0.5
+RELEASE_DELAY = 0.5
 
 # pid files path
 SAVE_PID_FILES = False  # 开启记录pid文件
@@ -32,7 +33,7 @@ DATA_FILE_NAME = '%(spider_name)s_%(tm)s.txt'
 # bloom filter
 BLOOM_REDIS_URL = 'redis://localhost:6379/1'
 BLOOM_KEY = 'bloom_yangmao_phone:%(no)s'
-
+# option config
 # BLOOM_REDIS_HOST = 'localhost'
 # BLOOM_REDIS_PORT = 6379
 # BLOOM_REDIS_DB = 9
@@ -58,6 +59,7 @@ HEART_BEAT_TIME = 60 * 10  # 心跳时间，检测已经停止的spider，启动
 NEED_ACCOUNT_BAND_JUDGE = True
 DUR_TIME = 10  # 低运行时长判定阈值(秒)
 WARNING_TIMES = 20  # 低运行时长次数阈值
+REDIS_RECORD_NAME = 'yangmao_low_run_time_record_map'  # redis中存储的记录名
 
 # 邮箱信息(base64编码)
 MAIL_USER = b'dG90YWxjaGVja0BzaW5hLmNvbQ=='  # 邮箱账号

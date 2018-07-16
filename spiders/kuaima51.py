@@ -21,8 +21,8 @@ full_PID_file_name = os.path.join(defaults.PIDS, defaults.PID_FILE_NAME) \
 full_data_file_name = os.path.join(defaults.DATA_PATH, defaults.DATA_FILE_NAME) \
                       % {'spider_name': spider_name, 'tm': defaults.TM}
 
-USER = ['ztsp1234567']
-PASS = ['ztsp1234567']
+USER = ['ext123456', 'ztsp123456', 'ztsp1234567']
+PASS = USER
 
 
 
@@ -119,12 +119,14 @@ class KuaiMa51Crawl(object):  # YZ验证码
                         self.fp.flush()
                     else:
                         record_msg('过滤了重复手机号码 -> %s' % phone_dict)
+                        
+                    time.sleep(defaults.RELEASE_DELAY)        
 
                     # 释放手机号码
                     res = self.release_url(phone)
                     record_msg('释放手机号 -> %s' % res)
 
-            time.sleep(defaults.DOWNLOAD_DELAY)
+            time.sleep(defaults.GET_PHONE_DELAY)
 
     def __del__(self):
         # self.fp.close()

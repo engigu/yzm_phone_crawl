@@ -23,12 +23,12 @@ full_data_file_name = os.path.join(defaults.DATA_PATH, defaults.DATA_FILE_NAME) 
 
 exit_signal = False
 RETRY_TIMES = 5  # 网络请求超时重试次数
-ItemId = '6'  # 百度
-API_URL = 'http://47.52.134.22:9180/service.asmx/'
+ItemId = '71'  # 百度
+API_URL = 'http://47.106.104.118:9180/service.asmx/'
 
 
-class LaiMaCrawl(object):  # 来码
-    name = 'laima'
+class ZanMaCrawl(object):  # 赞码
+    name = 'zanma'
 
     def __init__(self):
         self.user = defaults.USER
@@ -103,20 +103,22 @@ class LaiMaCrawl(object):  # 来码
                 for phone in phone_list:
                     phone_dict = {}
                     phone_dict['phone'] = phone
-                    phone_dict['source'] = LaiMaCrawl.name
+                    phone_dict['source'] = ZanMaCrawl.name
                     # print(phone_dict)
                     record_msg(str(phone_dict))
-                    if not self.bf_server.is_exists(phone):
-                        self.fp.write(str(phone_dict) + '\n')
-                        self.fp.flush()
-                    else:
-                        record_msg('过滤了重复手机号码 -> %s' % phone_dict)
+                    # if not self.bf_server.is_exists(phone):
+                    #     self.fp.write(str(phone_dict) + '\n')
+                    #     self.fp.flush()
+                    # else:
+                    #     record_msg('过滤了重复手机号码 -> %s' % phone_dict)
 
+                    time.sleep(defaults.RELEASE_DELAY)
+                    
                     # 释放手机号码
                     res = self.release_url(phone)
                     record_msg('释放手机号 -> %s' % res)
 
-            time.sleep(defaults.DOWNLOAD_DELAY)
+            time.sleep(defaults.GET_PHONE_DELAY)
 
     def __del__(self):
         # self.fp.close()
@@ -141,5 +143,5 @@ signal.signal(signal.SIGTERM, quit)
 
 if __name__ == '__main__':
     # logging.lev
-    L = LaiMaCrawl()
-    L.run()
+    Z = ZanMaCrawl()
+    Z.run()

@@ -99,7 +99,7 @@ class JieSuJieMaCrawl(object):  # YZ验证码
             i += 1
             if i > 3:
                 break
-            time.sleep(defaults.DOWNLOAD_DELAY)
+            time.sleep(defaults.GET_PHONE_DELAY)
 
     def __del__(self):
         # self.fp.close()

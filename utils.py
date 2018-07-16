@@ -43,7 +43,7 @@ def downloader():  # 下载器
 
 def record_low_run_time(server, spider_name):  # 记录低于运行时长阈值的次数
     print('record_low_run_time')
-    redis_name = 'yangmao_low_run_time_record_map'
+    redis_name = defaults.REDIS_RECORD_NAME
 
     res_exists = server.hget(name=redis_name, key=spider_name)
     if not res_exists:  # 第一次运行spider，设置初始值 1
@@ -70,7 +70,6 @@ def record_low_run_time(server, spider_name):  # 记录低于运行时长阈值�
         else:
             curr_num += 1  # 添加一次新的记录
             server.hset(name=redis_name, key=spider_name, value=curr_num)
-
 
 
 def need_save_pid_files(pid_files_path, need=defaults.SAVE_PID_FILES):
@@ -108,10 +107,10 @@ def account_band_judge(server, spider_name, need=defaults.NEED_ACCOUNT_BAND_JUDG
                     record_low_run_time(server, spider_name)
             else:
                 func(*args, **kwargs)
-
         return wrapper
-
     return decorator
+
 
 if __name__ == '__main__':
     print(defaults.SAVE_PID_FILES)
+    print(defaults.REDIS_RECORD_NAME)
