@@ -13,3 +13,5 @@ expect "结束所有任务，二次确认(a)："
 send "a\n"
 expect eof
 !!
+
+exit

@@ -28,7 +28,7 @@ mv one_${t}.bak $data_bak/$file_name
 # 备份logs文件
 cd ../logs/
 tar_file=logs_${t}.tar.gz
-tar -zcvf ${tar_file} ./*.log
+tar -zcf ${tar_file} ./*.log
 # 上线去掉注释
 # rm *.log
 mv ${tar_file} $data_bak/

@@ -56,6 +56,7 @@ class TheWolfCrawl(object):  # thewolf接码
         login_url = 'http://thewolf.yyyzmpt.com/reg.php?act=login'
         r = self.req_session.post(login_url, data=params)
         # token = r.json()
+        print(r.content.decode())
         return r.cookies, r.content.decode()
 
     @retry(stop_max_attempt_number=RETRY_TIMES)

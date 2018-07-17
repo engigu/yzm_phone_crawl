@@ -4,12 +4,13 @@
 bash kill_all.sh
 sleep 1
 bash kill_all.sh
-sleep 3
+sleep 1
 
 # 数据备份
-bash files_backup.sh
+# bash files_backup.sh
 
 sleep 10
 # 重新启动
 # bash run.sh
 
+exit
