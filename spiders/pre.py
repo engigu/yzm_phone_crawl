@@ -4,10 +4,10 @@ import signal
 import sys
 import time
 
+sys.path.append("..")
+
 import requests
 from retrying import retry
-
-sys.path.append("..")
 
 import defaults, logger, utils
 from BloomFilterRedis_ex.BloomfilterOnRedis import BloomFilterRedis
@@ -22,28 +22,30 @@ full_data_file_name = os.path.join(defaults.DATA_PATH, defaults.DATA_FILE_NAME) 
                       % {'spider_name': spider_name, 'tm': defaults.TM}
 
 exit_signal = False
-itemId = '3850'  # 百度通用
 RETRY_TIMES = 5  # 网络请求超时重试次数
-API_URL = 'http://xapi.yzm7.com/'
+ItemId = '6491'  # 百度
+API_URL = 'http://120.79.231.57:9180/service.asmx/'
 
 
-class YunMaCrawl(object):  # 云码
-    name = 'yunma'
+class YunMaAekm8Crawl(object):  # 目前失败，被封号
+    name = 'ymaekm8'
     redis_server = bloom_filter_from_defaults(defaults.BLOOM_REDIS_URL)
 
     def __init__(self):
         self.user = defaults.USER
         self.pass_ = defaults.PASS
         self.token = self._get_token()
+        print(self.token)
         self.bf_server = BloomFilterRedis(server=self.redis_server, key=defaults.BLOOM_KEY, blockNum=1)
         self.fp = open(full_data_file_name, 'w', encoding='utf-8')
 
+
     def _get_token(self):
         params = {
-            'uName': self.user,
-            'pWord': self.pass_,
+            'name': self.user,
+            'psw': self.pass_,
         }
-        login_url = API_URL + 'Login'
+        login_url = API_URL + 'UserLoginStr'
         r = requests.get(login_url, params=params)
         token = r.content.decode().split('&')[0]
         return token
@@ -51,20 +53,28 @@ class YunMaCrawl(object):  # 云码
     @retry(stop_max_attempt_number=RETRY_TIMES)
     def get_phone(self):
         params = {
-            'ItemId': itemId,  # 必填,项目需要先收藏
+            'xmid': ItemId,  # 必填,项目需要先收藏
             'token': self.token,  # 必填
-            'num': '1',  # 非必填，默认为 1
-            'PhoneType': '0',  # 非必填，默认为0
+            'sl': '1',
+            'lx': '0',
+            'ks': '0',
+            'a1': '',
+            'a2': '',
+            'pk': '',
+            'rj': '',
         }
-        get_phone_url = API_URL + 'getPhone'
+        get_phone_url = API_URL + 'GetHMStr'
         r = requests.get(get_phone_url, params=params)
-        return r.content.decode('gbk')
+        return r.content.decode()
 
     @retry(stop_max_attempt_number=RETRY_TIMES)
     def release_url(self, phone):  # 释放手机号码
-        release_url = API_URL + 'releasePhone?token=%s&phoneList=%s-%s;' \
-                      % (self.token, phone, itemId)
-        r = requests.get(release_url)
+        params = {
+            'token': self.token,
+            'hm': phone
+        }
+        release_url = API_URL + 'sfHmStr'
+        r = requests.get(release_url, params=params)
         return r.content.decode()
 
     def _extract_phone(self, raw):
@@ -84,10 +94,6 @@ class YunMaCrawl(object):  # 云码
             phone_ = self.get_phone()
             record_msg('接码平台取号返回 -> %s' % phone_)
 
-            if 'Session 过期' in phone_:  # 解决过一段时间 Session 过期
-                self.token = self._get_token()
-                record_msg(phone_)
-
             # 账户异常退出
             res = utils.return_phone_error_check(phone_)
             if res[0]:
@@ -99,8 +105,9 @@ class YunMaCrawl(object):  # 云码
                 for phone in phone_list:
                     phone_dict = {}
                     phone_dict['phone'] = phone
-                    phone_dict['source'] = YunMaCrawl.name
+                    phone_dict['source'] = YunMaAekm8Crawl.name
                     # print(phone_dict)
+                    utils.update_phone_dict(phone_dict)
                     record_msg(str(phone_dict))
                     if not self.bf_server.is_exists(phone):
                         self.fp.write(str(phone_dict) + '\n')
@@ -108,7 +115,7 @@ class YunMaCrawl(object):  # 云码
                     else:
                         record_msg('过滤了重复手机号码 -> %s' % phone_dict)
 
-                    time.sleep(defaults.RELEASE_DELAY)
+                    time.sleep(defaults.RELEASE_DELAY)        
 
                     # 释放手机号码
                     res = self.release_url(phone)
@@ -117,6 +124,7 @@ class YunMaCrawl(object):  # 云码
             time.sleep(defaults.GET_PHONE_DELAY)
 
     def __del__(self):
+        # self.fp.close()
         pass
 
 
@@ -137,5 +145,6 @@ signal.signal(signal.SIGINT, quit)  # 退出信号注册
 signal.signal(signal.SIGTERM, quit)
 
 if __name__ == '__main__':
-    Y = YunMaCrawl()
-    Y.run()
+    # logging.lev
+    J = YunMaAekm8Crawl()
+    J.run()

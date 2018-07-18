@@ -117,12 +117,13 @@ class TheWolfCrawl(object):  # thewolf接码
                     phone_dict['phone'] = phone
                     phone_dict['source'] = TheWolfCrawl.name
                     # print(phone_dict)
+                    utils.update_phone_dict(phone_dict)
                     record_msg(str(phone_dict))
-                    if not self.bf_server.is_exists(phone):
-                        self.fp.write(str(phone_dict) + '\n')
-                        self.fp.flush()
-                    else:
-                        record_msg('过滤了重复手机号码 -> %s' % phone_dict)
+                    # if not self.bf_server.is_exists(phone):
+                    #     self.fp.write(str(phone_dict) + '\n')
+                    #     self.fp.flush()
+                    # else:
+                    #     record_msg('过滤了重复手机号码 -> %s' % phone_dict)
 
                     time.sleep(defaults.RELEASE_DELAY)        
 

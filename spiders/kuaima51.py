@@ -113,6 +113,7 @@ class KuaiMa51Crawl(object):  # YZ验证码
                     phone_dict['phone'] = phone
                     phone_dict['source'] = KuaiMa51Crawl.name
                     # print(phone_dict)
+                    utils.update_phone_dict(phone_dict)
                     record_msg(str(phone_dict))
                     if not self.bf_server.is_exists(phone):
                         self.fp.write(str(phone_dict) + '\n')

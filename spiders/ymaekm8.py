@@ -23,12 +23,12 @@ full_data_file_name = os.path.join(defaults.DATA_PATH, defaults.DATA_FILE_NAME) 
 
 exit_signal = False
 RETRY_TIMES = 5  # 网络请求超时重试次数
-ItemId = '6'  # 企鹅号-自媒体-腾讯开放内容平台
-API_URL = 'http://www.js-yzm.com:9180/service.asmx/'
+ItemId = '6491'  # 百度
+API_URL = 'http://120.79.231.57:9180/service.asmx/'
 
 
-class JieSuJieMaCrawl(object):  # 集码
-    name = 'jisujiema'
+class YunMaAekm8Crawl(object):  # ymaekm8
+    name = 'ymaekm8'
     redis_server = bloom_filter_from_defaults(defaults.BLOOM_REDIS_URL)
 
     def __init__(self):
@@ -38,7 +38,6 @@ class JieSuJieMaCrawl(object):  # 集码
         print(self.token)
         self.bf_server = BloomFilterRedis(server=self.redis_server, key=defaults.BLOOM_KEY, blockNum=1)
         self.fp = open(full_data_file_name, 'w', encoding='utf-8')
-
 
     def _get_token(self):
         params = {
@@ -63,7 +62,7 @@ class JieSuJieMaCrawl(object):  # 集码
             'pk': '',
             'rj': '',
         }
-        get_phone_url = API_URL + 'GetHM2Str'
+        get_phone_url = API_URL + 'GetHMStr'
         r = requests.get(get_phone_url, params=params)
         return r.content.decode()
 
@@ -105,7 +104,7 @@ class JieSuJieMaCrawl(object):  # 集码
                 for phone in phone_list:
                     phone_dict = {}
                     phone_dict['phone'] = phone
-                    phone_dict['source'] = JieSuJieMaCrawl.name
+                    phone_dict['source'] = YunMaAekm8Crawl.name
                     # print(phone_dict)
                     utils.update_phone_dict(phone_dict)
                     record_msg(str(phone_dict))
@@ -114,8 +113,8 @@ class JieSuJieMaCrawl(object):  # 集码
                         self.fp.flush()
                     else:
                         record_msg('过滤了重复手机号码 -> %s' % phone_dict)
-                        
-                    time.sleep(defaults.RELEASE_DELAY)        
+
+                    time.sleep(defaults.RELEASE_DELAY)
 
                     # 释放手机号码
                     res = self.release_url(phone)
@@ -146,5 +145,5 @@ signal.signal(signal.SIGTERM, quit)
 
 if __name__ == '__main__':
     # logging.lev
-    J = JieSuJieMaCrawl()
+    J = YunMaAekm8Crawl()
     J.run()

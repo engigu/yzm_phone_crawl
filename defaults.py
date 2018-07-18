@@ -50,7 +50,7 @@ LOG_NAME = '%(name)s_%(time)s.log'
 # spiders env config
 # 忽略文件list配置，pre.py为新增待上线测试spider，测试完毕后改成其他名字会自动部署(在启动heart_beat的情况下)
 SPIDERS_EXCLUDE_LISTS = ['demo.py', 'pre.py', '__init__.py', 'main.py', 'pycharm', '<defunct>', 'toone.py',
-                         '/opt/pycharm-2018.1.3/helpers/pydev/pydevconsole.py']
+                         '/opt/pycharm-2018.1.3/helpers/pydev/pydevconsole.py', '/usr/bin/update-manager']
 PYTHON_INTERPRETER_PATH = '/home/tk/.virtualenvs/sp/bin/python'  # python解释器路径
 SPIDERS_PATH = os.path.join(ROOT_PATH, 'spiders/')
 HEART_BEAT_TIME = 60 * 10  # 心跳时间，检测已经停止的spider，启动spider，默认为秒

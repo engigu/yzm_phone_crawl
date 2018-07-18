@@ -4,10 +4,10 @@ import signal
 import sys
 import time
 
-sys.path.append("..")
-
 import requests
 from retrying import retry
+
+sys.path.append("..")
 
 import defaults, logger, utils
 from BloomFilterRedis_ex.BloomfilterOnRedis import BloomFilterRedis
@@ -22,13 +22,13 @@ full_data_file_name = os.path.join(defaults.DATA_PATH, defaults.DATA_FILE_NAME) 
                       % {'spider_name': spider_name, 'tm': defaults.TM}
 
 exit_signal = False
+itemId = '15980'  # 百度通用
 RETRY_TIMES = 5  # 网络请求超时重试次数
-ItemId = '6'  # 企鹅号-自媒体-腾讯开放内容平台
-API_URL = 'http://www.js-yzm.com:9180/service.asmx/'
+API_URL = 'http://yima888.com/http.aspx?action='
 
 
-class JieSuJieMaCrawl(object):  # 集码
-    name = 'jisujiema'
+class YiMa888Crawl(object):  # 云码
+    name = 'yima888'
     redis_server = bloom_filter_from_defaults(defaults.BLOOM_REDIS_URL)
 
     def __init__(self):
@@ -39,41 +39,35 @@ class JieSuJieMaCrawl(object):  # 集码
         self.bf_server = BloomFilterRedis(server=self.redis_server, key=defaults.BLOOM_KEY, blockNum=1)
         self.fp = open(full_data_file_name, 'w', encoding='utf-8')
 
-
     def _get_token(self):
         params = {
-            'name': self.user,
-            'psw': self.pass_,
+            'uid': self.user,
+            'pwd': self.pass_,
         }
-        login_url = API_URL + 'UserLoginStr'
+        login_url = API_URL + 'loginIn'
         r = requests.get(login_url, params=params)
-        token = r.content.decode().split('&')[0]
+        token = r.content.decode().split('|')[1]
         return token
 
     @retry(stop_max_attempt_number=RETRY_TIMES)
     def get_phone(self):
         params = {
-            'xmid': ItemId,  # 必填,项目需要先收藏
+            'pid': itemId,  # 必填,项目需要先收藏
             'token': self.token,  # 必填
-            'sl': '1',
-            'lx': '0',
-            'ks': '0',
-            'a1': '',
-            'a2': '',
-            'pk': '',
-            'rj': '',
+            'uid': self.user,  # 非必填，默认为 1
         }
-        get_phone_url = API_URL + 'GetHM2Str'
+        get_phone_url = API_URL + 'getMobilenum'
         r = requests.get(get_phone_url, params=params)
         return r.content.decode()
 
     @retry(stop_max_attempt_number=RETRY_TIMES)
     def release_url(self, phone):  # 释放手机号码
         params = {
-            'token': self.token,
-            'hm': phone
+            'mobile': phone,  # 必填,项目需要先收藏
+            'token': self.token,  # 必填
+            'uid': self.user,  # 非必填，默认为 1
         }
-        release_url = API_URL + 'sfHmStr'
+        release_url = API_URL + 'ReleaseMobile'
         r = requests.get(release_url, params=params)
         return r.content.decode()
 
@@ -94,6 +88,10 @@ class JieSuJieMaCrawl(object):  # 集码
             phone_ = self.get_phone()
             record_msg('接码平台取号返回 -> %s' % phone_)
 
+            if 'Session 过期' in phone_:  # 解决过一段时间 Session 过期
+                self.token = self._get_token()
+                record_msg(phone_)
+
             # 账户异常退出
             res = utils.return_phone_error_check(phone_)
             if res[0]:
@@ -105,17 +103,17 @@ class JieSuJieMaCrawl(object):  # 集码
                 for phone in phone_list:
                     phone_dict = {}
                     phone_dict['phone'] = phone
-                    phone_dict['source'] = JieSuJieMaCrawl.name
+                    phone_dict['source'] = YiMa888Crawl.name
                     # print(phone_dict)
                     utils.update_phone_dict(phone_dict)
                     record_msg(str(phone_dict))
-                    if not self.bf_server.is_exists(phone):
-                        self.fp.write(str(phone_dict) + '\n')
-                        self.fp.flush()
-                    else:
-                        record_msg('过滤了重复手机号码 -> %s' % phone_dict)
-                        
-                    time.sleep(defaults.RELEASE_DELAY)        
+                    # if not self.bf_server.is_exists(phone):
+                    #     self.fp.write(str(phone_dict) + '\n')
+                    #     self.fp.flush()
+                    # else:
+                    #     record_msg('过滤了重复手机号码 -> %s' % phone_dict)
+
+                    time.sleep(defaults.RELEASE_DELAY)
 
                     # 释放手机号码
                     res = self.release_url(phone)
@@ -124,7 +122,6 @@ class JieSuJieMaCrawl(object):  # 集码
             time.sleep(defaults.GET_PHONE_DELAY)
 
     def __del__(self):
-        # self.fp.close()
         pass
 
 
@@ -145,6 +142,5 @@ signal.signal(signal.SIGINT, quit)  # 退出信号注册
 signal.signal(signal.SIGTERM, quit)
 
 if __name__ == '__main__':
-    # logging.lev
-    J = JieSuJieMaCrawl()
-    J.run()
+    Y = YiMa888Crawl()
+    Y.run()

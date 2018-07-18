@@ -106,6 +106,7 @@ class MiLiMaCrawl(object):  # 米粒验证码
                     phone_dict['phone'] = phone
                     phone_dict['source'] = MiLiMaCrawl.name
                     # print(phone_dict)
+                    utils.update_phone_dict(phone_dict)
                     record_msg(str(phone_dict))
                     if not self.bf_server.is_exists(phone):
                         self.fp.write(str(phone_dict) + '\n')

@@ -101,6 +101,7 @@ class YunMaCrawl(object):  # 云码
                     phone_dict['phone'] = phone
                     phone_dict['source'] = YunMaCrawl.name
                     # print(phone_dict)
+                    utils.update_phone_dict(phone_dict)
                     record_msg(str(phone_dict))
                     if not self.bf_server.is_exists(phone):
                         self.fp.write(str(phone_dict) + '\n')

@@ -41,6 +41,14 @@ def downloader():  # 下载器
     pass
 
 
+def update_phone_dict(phone_dict):
+    """
+    统一更新管理需要补充的phone字段信息
+    """
+    phone_dict['update'] = time.strftime('%Y.%m.%d %H:%M', time.localtime(time.time()))
+    return phone_dict
+
+
 def record_low_run_time(server, spider_name):  # 记录低于运行时长阈值的次数
     print('record_low_run_time')
     redis_name = defaults.REDIS_RECORD_NAME
@@ -114,3 +122,6 @@ def account_band_judge(server, spider_name, need=defaults.NEED_ACCOUNT_BAND_JUDG
 if __name__ == '__main__':
     print(defaults.SAVE_PID_FILES)
     print(defaults.REDIS_RECORD_NAME)
+    a = {'a': 2}
+    update_phone_dict(a)
+    print(a)
