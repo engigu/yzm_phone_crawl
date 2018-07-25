@@ -1,6 +1,6 @@
 #!/bin/bash
 
-python_env='/home/tk/.virtualenvs/sp/bin/python'
+python_env='/root/.virtualenvs/sp/bin/python'
 
 
 cd ../spiders/

@@ -53,7 +53,8 @@ def get_pids_from_ps():
     other_spider_list = []
     for line in res[1].split('\n'):
         tmp = line.split(' ')
-        if tmp[2] not in exclude_list:
+        if tmp[2] not in exclude_list and tmp[2] in spiders_list:
+            print(tmp[2])
             online_spider_list.append(tmp)
         if tmp[2] in other_list:  # 必须kill的进程，否则会反复重启进程
             other_spider_list.append(tmp)
@@ -73,8 +74,8 @@ def _sort_files_name(files_list):
     """
     分割文件列表，分成两个文件列表，一个是当前运行spider最新文件的列表，另一个是历史文件
 
-    :param files_list: 全部文件列表
-    :return: 返回不是当前运行spider的文件列表
+    :param files_list:      全部文件列表
+    :return:                返回除了当前运行spider的文件列表
     """
     sorted_list = sorted(files_list)
 
@@ -189,6 +190,7 @@ if __name__ == '__main__':
     main()
     # print(spiders_list)
     # print(len(spiders_list))
+    # get_pids_from_ps()
     # print(spiders_path)
     # print(os.getcwd())
     # remove_empty_files_under_folder('./data_rollback/')

@@ -1,6 +1,8 @@
 # from .BloomRedisDupeFilter import BLOOM_KEY
 import defaults
 
+import json
+
 
 class SimpleHash(object):
     def __init__(self, cap, seed):
@@ -56,6 +58,27 @@ class BloomFilterRedis(object):
 
 
 if __name__ == '__main__':
-    for seed in [5, 7, 11, 13, 31, 37, 61]:
-        sh = SimpleHash(1 << 31, seed)
-        print(sh.hash('123'))
+    # for seed in [5, 7, 11, 13, 31, 37, 61]:
+    #     sh = SimpleHash(1 << 31, seed)
+    #     print(sh.hash('123'))
+    #
+    import connection
+
+    server = connection.bloom_filter_from_defaults('redis://localhost:6379/1')
+    bfr = BloomFilterRedis(server, 'bloom_yangmao_phone:0')
+    print(bfr.is_exists('123'))
+    with open('one.txt', 'r') as f:
+        i = 1
+        while True:
+            line = f.readline()
+            if not line:
+                break
+            try:
+                tmp = json.loads(line.replace("'", '"'))
+                if bfr.is_exists(tmp['phone']):
+                    i += 1
+            except:
+                print(line)
+                break
+            print(i)
+    print(i)

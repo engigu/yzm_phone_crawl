@@ -27,6 +27,7 @@ RETRY_TIMES = 5  # 网络请求超时重试次数
 API_URL = 'http://yima888.com/http.aspx?action='
 
 
+#   直接提示充值5.3元以上
 class YiMa888Crawl(object):  # 云码
     name = 'yima888'
     redis_server = bloom_filter_from_defaults(defaults.BLOOM_REDIS_URL)
@@ -107,11 +108,11 @@ class YiMa888Crawl(object):  # 云码
                     # print(phone_dict)
                     utils.update_phone_dict(phone_dict)
                     record_msg(str(phone_dict))
-                    # if not self.bf_server.is_exists(phone):
-                    #     self.fp.write(str(phone_dict) + '\n')
-                    #     self.fp.flush()
-                    # else:
-                    #     record_msg('过滤了重复手机号码 -> %s' % phone_dict)
+                    if not self.bf_server.is_exists(phone):
+                        self.fp.write(str(phone_dict) + '\n')
+                        self.fp.flush()
+                    else:
+                        record_msg('过滤了重复手机号码 -> %s' % phone_dict)
 
                     time.sleep(defaults.RELEASE_DELAY)
 

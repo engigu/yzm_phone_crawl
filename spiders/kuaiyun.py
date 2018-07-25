@@ -27,7 +27,7 @@ ItemId = '165'  # 企鹅号-自媒体-腾讯开放内容平台
 API_URL = 'http://api.ky319.com:8000/api/do.php'
 
 
-class KuaiYunCrawl(object):  # 集码
+class KuaiYunCrawl(object):  # 快云接码
     name = 'kuaiyun'
     redis_server = bloom_filter_from_defaults(defaults.BLOOM_REDIS_URL)
 
@@ -104,12 +104,11 @@ class KuaiYunCrawl(object):  # 集码
                     # print(phone_dict)
                     utils.update_phone_dict(phone_dict)
                     record_msg(str(phone_dict))
-                    print(phone)
-                    # if not self.bf_server.is_exists(phone):
-                    #     self.fp.write(str(phone_dict) + '\n')
-                    #     self.fp.flush()
-                    # else:
-                    #     record_msg('过滤了重复手机号码 -> %s' % phone_dict)
+                    if not self.bf_server.is_exists(phone):
+                        self.fp.write(str(phone_dict) + '\n')
+                        self.fp.flush()
+                    else:
+                        record_msg('过滤了重复手机号码 -> %s' % phone_dict)
 
                     time.sleep(defaults.RELEASE_DELAY)
 
@@ -142,5 +141,5 @@ signal.signal(signal.SIGTERM, quit)
 
 if __name__ == '__main__':
     # logging.lev
-    J = KuaiYunCrawl()
-    J.run()
+    K = KuaiYunCrawl()
+    K.run()

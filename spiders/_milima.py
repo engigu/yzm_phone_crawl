@@ -23,12 +23,13 @@ full_data_file_name = os.path.join(defaults.DATA_PATH, defaults.DATA_FILE_NAME) 
 
 exit_signal = False
 RETRY_TIMES = 5  # 网络请求超时重试次数
-ItemId = '165'  # 企鹅号-自媒体-腾讯开放内容平台
-API_URL = 'http://api.ky319.com:8000/api/do.php'
+ItemId = '3780'  # 百度
+API_URL = 'http://www.mili18.com:9180/service.asmx/'
 
 
-class KuaiYunCrawl(object):  # 集码
-    name = 'kuaiyun'
+# 封号，注册入口已经关闭
+class MiLiMaCrawl(object):  # 米粒验证码
+    name = 'milima'
     redis_server = bloom_filter_from_defaults(defaults.BLOOM_REDIS_URL)
 
     def __init__(self):
@@ -41,23 +42,28 @@ class KuaiYunCrawl(object):  # 集码
 
     def _get_token(self):
         params = {
-            'u': self.user,
-            'p': self.pass_,
-            'op': 'login',
+            'name': self.user,
+            'psw': self.pass_,
         }
-        login_url = API_URL
+        login_url = API_URL + 'UserLoginStr'
         r = requests.get(login_url, params=params)
-        token = r.content.decode().split('|')[1]
+        token = r.content.decode().split('&')[0]
         return token
 
     @retry(stop_max_attempt_number=RETRY_TIMES)
     def get_phone(self):
         params = {
-            'projId': ItemId,  # 必填,项目需要先收藏
+            'xmid': ItemId,  # 必填,项目需要先收藏
             'token': self.token,  # 必填
-            'op': 'getPhone',
+            'sl': '1',
+            'lx': '0',
+            'ks': '0',
+            'a1': '',
+            'a2': '',
+            'pk': '',
+            'rj': '',
         }
-        get_phone_url = API_URL
+        get_phone_url = API_URL + 'GetHM2Str'
         r = requests.get(get_phone_url, params=params)
         return r.content.decode()
 
@@ -65,10 +71,9 @@ class KuaiYunCrawl(object):  # 集码
     def release_url(self, phone):  # 释放手机号码
         params = {
             'token': self.token,
-            'phone': phone,
-            'op': 'releasePhone',
+            'hm': phone
         }
-        release_url = API_URL
+        release_url = API_URL + 'sfHmStr'
         r = requests.get(release_url, params=params)
         return r.content.decode()
 
@@ -100,16 +105,15 @@ class KuaiYunCrawl(object):  # 集码
                 for phone in phone_list:
                     phone_dict = {}
                     phone_dict['phone'] = phone
-                    phone_dict['source'] = KuaiYunCrawl.name
+                    phone_dict['source'] = MiLiMaCrawl.name
                     # print(phone_dict)
                     utils.update_phone_dict(phone_dict)
                     record_msg(str(phone_dict))
-                    print(phone)
-                    # if not self.bf_server.is_exists(phone):
-                    #     self.fp.write(str(phone_dict) + '\n')
-                    #     self.fp.flush()
-                    # else:
-                    #     record_msg('过滤了重复手机号码 -> %s' % phone_dict)
+                    if not self.bf_server.is_exists(phone):
+                        self.fp.write(str(phone_dict) + '\n')
+                        self.fp.flush()
+                    else:
+                        record_msg('过滤了重复手机号码 -> %s' % phone_dict)
 
                     time.sleep(defaults.RELEASE_DELAY)
 
@@ -142,5 +146,5 @@ signal.signal(signal.SIGTERM, quit)
 
 if __name__ == '__main__':
     # logging.lev
-    J = KuaiYunCrawl()
-    J.run()
+    M = MiLiMaCrawl()
+    M.run()

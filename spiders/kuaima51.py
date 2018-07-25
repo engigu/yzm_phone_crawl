@@ -21,9 +21,11 @@ full_PID_file_name = os.path.join(defaults.PIDS, defaults.PID_FILE_NAME) \
 full_data_file_name = os.path.join(defaults.DATA_PATH, defaults.DATA_FILE_NAME) \
                       % {'spider_name': spider_name, 'tm': defaults.TM}
 
-USER = ['ext123456', 'ztsp123456', 'ztsp1234567']
+USER = ['yrfsyf8789', 'fna654ko', 'ext1234567', 'ext123456', 'ztsp123456', 'ztsp1234567']
 PASS = USER
 
+defaults.GET_PHONE_DELAY = 1
+defaults.RELEASE_DELAY = 1.5
 
 
 exit_signal = False

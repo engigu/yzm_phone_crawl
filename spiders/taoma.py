@@ -25,6 +25,8 @@ exit_signal = False
 RETRY_TIMES = 5  # 网络请求超时重试次数
 ItemId = '6'  # 百度
 API_URL = 'http://47.90.98.47:9180/service.asmx/'
+USER = ['ztsp1234567']
+PASS = USER
 
 
 class TaoMaCrawl(object):  # 目前失败，被封号
@@ -32,8 +34,8 @@ class TaoMaCrawl(object):  # 目前失败，被封号
     redis_server = bloom_filter_from_defaults(defaults.BLOOM_REDIS_URL)
 
     def __init__(self):
-        self.user = defaults.USER
-        self.pass_ = defaults.PASS
+        self.user = USER[0]
+        self.pass_ = PASS[0]
         self.token = self._get_token()
         print(self.token)
         self.bf_server = BloomFilterRedis(server=self.redis_server, key=defaults.BLOOM_KEY, blockNum=1)

@@ -12,7 +12,7 @@ def return_phone_error_check(raw):
     :return True: 存在异常
     """
     if raw == '0':  # 没登陆或失败
-        return True, '没登陆或失败'
+        return True, '没登陆或失败,或者账号被封'
     elif '释放号码' in raw:
         return True, '请先释放号码请先释放号码'
     elif raw == '-1':  # 当前没有合条件号码

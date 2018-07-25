@@ -24,7 +24,7 @@ full_data_file_name = os.path.join(defaults.DATA_PATH, defaults.DATA_FILE_NAME) 
 exit_signal = False
 RETRY_TIMES = 5  # 网络请求超时重试次数
 ItemId = '6'  # 百度
-API_URL = 'http://47.52.134.22:9180/service.asmx/'
+API_URL = 'http://47.91.157.233/service.asmx/'
 
 
 class LaiMaCrawl(object):  # 来码
@@ -114,7 +114,7 @@ class LaiMaCrawl(object):  # 来码
                     else:
                         record_msg('过滤了重复手机号码 -> %s' % phone_dict)
 
-                    time.sleep(defaults.RELEASE_DELAY)        
+                    time.sleep(defaults.RELEASE_DELAY)
 
                     # 释放手机号码
                     res = self.release_url(phone)
